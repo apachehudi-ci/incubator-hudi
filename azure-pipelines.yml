@@ -14,17 +14,45 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-trigger:
-- master
+# trigger:
+# - master
 
-pool:
-  vmImage: 'ubuntu-latest'
+# pool:
+#   vmImage: 'ubuntu-latest'
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+# steps:
+# - script: echo Hello, world!
+#   displayName: 'Run a one-line script'
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+# - script: |
+#     echo Add other tasks to build, test, and deploy your project.
+#     echo See https://aka.ms/yaml
+#   displayName: 'Run a multi-line script'
+
+jobs:
+- job: runOnCustomMachines # = custom machines
+  condition: not(eq(variables['MODE'], 'e2e'))
+  pool:
+    vmImage: 'ubuntu-latest'
+  timeoutInMinutes: 120
+  steps:
+  # Azure pipelines can only evaluate conditions with the build repo name in the steps.
+  # if the repo == "apachehudi-ci/incubator-hudi", we execute the steps
+  - task: Maven@3
+    inputs:
+      mavenPomFile: 'pom.xml'
+      mavenOptions: '-Xmx3072m'
+      javaHomeOption: 'JDKVersion'
+      jdkVersionOption: '1.8'
+      jdkArchitectureOption: 'x64'
+      publishJUnitResults: true
+      testResultsFiles: '**/surefire-reports/TEST-*.xml'
+      goals: 'clean install'
+      timeoutInMinutes: 120
+
+- job: runHudiTestSuite
+  pool: # we run the end to end tests on the msft hosted agents
+    vmImage: 'ubuntu-latest'
+  steps:
+    - script: ./hudi-test-suite/prepare_integration_suite.sh
+      displayName: Build
