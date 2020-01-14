@@ -31,6 +31,8 @@
 
 jobs:
 - job: runOnCustomMachines # = custom machines
+  trigger:
+  - hudi_test_suite_refactor
   condition: not(eq(variables['MODE'], 'e2e'))
   pool:
     vmImage: 'ubuntu-latest'
