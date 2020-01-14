@@ -14,8 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# trigger:
-# - master
+trigger:
+- hudi_test_suite_refactor
 
 # pool:
 #   vmImage: 'ubuntu-latest'
@@ -31,8 +31,6 @@
 
 jobs:
 - job: runOnCustomMachines # = custom machines
-  trigger:
-  - hudi_test_suite_refactor
   condition: not(eq(variables['MODE'], 'e2e'))
   pool:
     vmImage: 'ubuntu-latest'
