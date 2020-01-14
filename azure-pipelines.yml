@@ -49,6 +49,7 @@ jobs:
       testResultsFiles: '**/surefire-reports/TEST-*.xml'
       goals: 'clean install'
       timeoutInMinutes: 120
+  - script: ./hudi-test-suite/prepare_integration_suite.sh
 
 - job: runHudiTestSuite
   pool: # we run the end to end tests on the msft hosted agents
